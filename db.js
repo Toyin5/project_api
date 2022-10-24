@@ -10,11 +10,4 @@ const database = async (database_name = "attendance") => {
     return client.db();
 }
 
-
-// const database = async () => {
-//     return await mongoose.connect("mongodb+srv://attendance_app:lT8yxOveVpsEDmwA@cluster0.60xed1f.mongodb.net/?retryWrites=true&w=majority")
-//         .then((res) => console.log("Connection success: ", res.options.autoIndex))
-//         .catch(err => console.log("Connection failed" + err));
-// }
-
 export default database;

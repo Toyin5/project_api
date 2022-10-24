@@ -17,11 +17,19 @@ export const registerStudent = async (req, res) => {
         })
     }).catch((e) => {
         console.log(e)
-        res.status(402).json({
-            status: 402,
-            message: "Error",
-            code: e.code
-        })
+        if (e.code === 11000) {
+            res.status(409).json({
+                status: 409,
+                message: "Student already registered",
+                id: id
+            })
+        } else {
+            res.status(401).json({
+                status: 401,
+                message: "Error",
+                code: e.code
+            })
+        }
     })
 }
 
