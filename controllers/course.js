@@ -1,16 +1,17 @@
 import course from "../models/course.js";
 import database from "../db.js";
+import bcrypt from "bcrypt";
 export const registerCourse = async (req, res) => {
     const db = await database();
     const collection = db.collection("courses");
-    const { name, code, password, lecturer_name } = req.body
+    const { name, code, password, lecturer_name } = req.body;
+    const salt = await bcrypt.genSalt(10);
     const newCourse = new course({
         course_name: name,
         _id: code,
-        password: password,
+        password: await bcrypt.hash(password, salt),
         lecturer_name: lecturer_name
     })
-
 
     await collection.insertOne(newCourse).then((result) => {
         res.status(200).json({
@@ -31,8 +32,6 @@ export const registerCourse = async (req, res) => {
             code: e.code
         })
     })
-
-
 }
 
 export const getCourses = async (req, res) => {
@@ -55,10 +54,10 @@ export const getCourses = async (req, res) => {
 }
 
 export const deleteAllCourses = async (req, res) => {
-    const db = database();
+    const db = await database();
     const collection = db.collection("courses");
 
-    await collection.deleteMany({ __v: 0 }).then(
+    await collection.deleteMany({}).then(
         res.status(200).json({
             status: 200,
             message: "Success",
@@ -70,21 +69,25 @@ export const logCourse = async (req, res) => {
     const { code, pass } = req.body
     const db = await database();
     const collection = db.collection("courses");
+
     await collection.findOne({
-        _id: code,
-        password: pass
+        _id: code
     }).then(result => {
-        res.status(200).json({
-            status: 200,
-            message: "Logged",
-            token: result
+        console.log(result.password);
+        bcrypt.compare(pass, result.password, (err, same) => {
+            if (!!err) {
+                res.status(400).json({ status: 400, message: "Error decrypting", token: "NO TOKEN" })
+            } else
+                (same)
+                    ? res.status(200).json({ status: 200, message: "Logged", token: result })
+                    : res.status(404).json({ status: 200, message: "Incorrect Password", token: pass });
         })
     }).catch(e => {
         console.log(e)
         res.status(404).json({
             status: 404,
-            message: "Incorrect Code or Password",
-            token: code + pass
+            message: "Course not registered",
+            token: code
         })
     })
 }
