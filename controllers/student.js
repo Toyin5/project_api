@@ -1,7 +1,8 @@
 import student from "../models/student.js";
 import database from "../db.js";
 export const registerStudent = async (req, res) => {
-    const { name, id, code } = req.body;
+	const {code} = req.params
+	const { name, id} = req.body;
     const db = await database(code);
     const collection = db.collection("students");
     const newStudent = new student({
