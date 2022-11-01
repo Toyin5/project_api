@@ -1,13 +1,18 @@
 import mongoose from "mongoose";
 
 const attendance = new mongoose.Schema({
+    _id: {
+        type: Number,
+        required: true
+    },
     lecture: {
         type: Number,
         required: true
     },
     attendees: [{
-        student_id: String,
-        present: { type: Number(0 || 1), default: 0 }
+        _id: String,
+        present: { type: Number, default: 0 },
+        date_stamp: { type: Date, default: Date.now }
     }],
     date_stamp: { type: Date, default: Date.now }
 })

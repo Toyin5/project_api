@@ -4,6 +4,7 @@ import cors from "cors";
 import database from "./db.js";
 import { courseRouter } from "./routes/courses.js";
 import { studentRouter } from "./routes/student.js";
+import { attendanceRouter } from "./routes/attendance.js";
 
 const app = express();
 const port = 3300;
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use(bodyParser.raw());
 app.use("/api", courseRouter)
 app.use("/api", studentRouter)
+app.use("/api", attendanceRouter)
 
 
 app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
