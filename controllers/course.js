@@ -79,8 +79,11 @@ export const logCourse = async (req, res) => {
                 res.status(400).json({ status: 400, message: "Error decrypting", token: "NO TOKEN" })
             } else
                 (same)
-                    ? res.status(200).json({ status: 200, message: "Logged", token: result })
-                    : res.status(404).json({ status: 200, message: "Incorrect Password", token: pass });
+                    ?
+                    res.status(200).json(
+                        { status: 200, message: "Logged", token: result }
+                    )
+                    : res.status(404).json({ status: 404, message: "Incorrect Password", token: pass });
         })
     }).catch(e => {
         console.log(e)
