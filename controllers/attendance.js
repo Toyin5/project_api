@@ -78,7 +78,7 @@ export const markAttendance = async (req, res) => {
 }
 
 export const getClassAttendance = async (req, res) => {
-    const { code, lec } = req.body;
+    const { code, lec } = req.params;
     const db = await database(code);
     const attendanceCollection = db.collection("attendance");
     return await attendanceCollection.findOne({ _id: lec }).then(result => {

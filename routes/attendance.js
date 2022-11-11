@@ -4,4 +4,4 @@ export const attendanceRouter = express.Router();
 
 attendanceRouter.post("/attendance/:code", initializeAttendance)
 attendanceRouter.post("/attendance/:code/:lec", markAttendance)
-attendanceRouter.get("/attendance/get/class", getClassAttendance);
+attendanceRouter.get("/attendance/get/class/:code/:lec", getClassAttendance);
