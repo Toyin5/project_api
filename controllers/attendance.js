@@ -8,8 +8,8 @@ export const initializeAttendance = async (req, res) => {
     const db = await database(code);
     const collection = db.collection("students");
     const newAttendance = new attendance({
-        _id: lec,
-        lecture: lec,
+        _id: parseInt(lec),
+        lecture: parseInt(lec),
         attendees: (await collection.find({}).toArray()).map(stud => JSON.parse(`{ "_id": ${stud._id} }`))
     })
     const attendanceCollection = db.collection("attendance");
@@ -20,12 +20,24 @@ export const initializeAttendance = async (req, res) => {
             data: result.acknowledged + result.insertedId
         })
     }).catch(e => {
+        // if (e.code === 11000) {
+        //     // reupdate attendees 
+        //     await attendanceCollection.findOneAndUpdate({ _id: parseInt(lec) }, { $set: { "_id.$.attendees": (await collection.find({}).toArray()).map(stud => JSON.parse(`{ "_id": ${stud._id} }`)) } })
+        //         .then(result => {
+        //             res.status(409).json({
+        //                 status: 409,
+        //                 message: "Conflict + Successfully updated",
+        //                 data: result
+        //             })
+        //         })
+        // } else {
         console.log(e)
-        res.status(402).json({
-            status: 402,
+        res.status(401).json({
+            status: 401,
             message: "Error",
             code: e.code
         })
+        // }
     })
 }
 
@@ -48,7 +60,7 @@ export const markAttendance = async (req, res) => {
                 console.log(result)
                 res.status(200).json({
                     status: 200,
-                    message: "Successfully updated",
+                    message: "Successfully attended",
                     data: result.acknowledged + result.upsertedId
                 })
             }).catch(e => {
@@ -81,7 +93,7 @@ export const getClassAttendance = async (req, res) => {
     const { code, lec } = req.params;
     const db = await database(code);
     const attendanceCollection = db.collection("attendance");
-    return await attendanceCollection.findOne({ _id: lec }).then(result => {
+    return await attendanceCollection.findOne({ _id: parseInt(lec) }).then(result => {
         console.log(result)
         res.status(200).json({
             status: 200,
@@ -93,8 +105,16 @@ export const getClassAttendance = async (req, res) => {
         console.log(e)
         res.status(404).json({
             status: 404,
-            message: "Not Found. Student not registered",
+            message: "Cannot fetch",
             code: e.code
         })
     })
+}
+
+export const exportAttendance = async (req, res) => {
+    const { code } = req.body;
+    const db = await database(code);
+    const attendanceCollection = db.collection("attendance");
+    attendanceCollection.find({}).toArray
+
 }
