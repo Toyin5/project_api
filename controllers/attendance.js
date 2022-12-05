@@ -135,7 +135,7 @@ export const getAllClassAttendance = async (req, res) => {
 }
 
 export const getAllClassAttendanceTable = async (req, res) => {
-    const { code } = req.body;
+    const { code } = req.params;
     const db = await database(code);
     const collection = db.collection("students");
     const attendanceCollection = db.collection("attendance");

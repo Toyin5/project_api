@@ -7,4 +7,4 @@ attendanceRouter.post("/attendance/mark/:code/:lec", markAttendance);
 attendanceRouter.get("/attendance/get/class/:code/:lec", getClassAttendance);
 attendanceRouter.get("/attendance/get/attendance/:code", getAllClassAttendance);
 attendanceRouter.get("/attendance/export/class", exportAttendance);
-attendanceRouter.get("/attendance/table/class", getAllClassAttendanceTable);
+attendanceRouter.get("/attendance/table/class/:code", getAllClassAttendanceTable);
