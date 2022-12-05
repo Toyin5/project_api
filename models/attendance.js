@@ -11,9 +11,9 @@ const attendance = new mongoose.Schema({
     },
     attendees: [{
         _id: String,
-        present: { type: Number, default: 0 },
-        date_stamp: { type: Date, default: Date.now }
+        present: { type: Number, default: 0 }
     }],
+    // attendees: [String],
     date_stamp: { type: Date, default: Date.now }
 })
 
