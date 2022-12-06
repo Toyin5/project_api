@@ -1,6 +1,7 @@
 import attendance from "../models/attendance.js";
 import database from "../db.js";
-import ExcelJS from "exceljs"
+import ExcelJS from "exceljs";
+import path from "node:path"
 
 // const attendees = []
 export const initializeAttendance = async (req, res) => {
@@ -144,7 +145,7 @@ export const getAllClassAttendanceTable = async (req, res) => {
         const students = await collection.find({}).toArray()
         for (let i = 0; i < students.length; i++) {
             const student = students[i];
-            const row = { _id: student._id }
+            const row = { _id: student._id, name: student.student_name }
             for (let j = 0; j < result.length; j++) {
                 const d = result[j];
                 const attendees = d.attendees
@@ -217,6 +218,7 @@ export const exportAttendance = async (req, res) => {
         const totalHeader = { header: "Total", key: "total" }
         ws.columns = [
             { header: "Student ID", key: "_id" },
+            { header: "Student Name", key: "name" },
             ...headers,
             totalHeader
         ]
@@ -228,7 +230,7 @@ export const exportAttendance = async (req, res) => {
         const students = await collection.find({}).toArray()
         for (let i = 0; i < students.length; i++) {
             const student = students[i];
-            const row = { _id: student._id }
+            const row = { _id: student._id, name: student.student_name }
             for (let j = 0; j < result.length; j++) {
                 const d = result[j];
                 const attendees = d.attendees
@@ -257,18 +259,24 @@ export const exportAttendance = async (req, res) => {
         })
     })
 
-    const file = workbook.xlsx.writeBuffer();
-    return file.then((f) => {
-        const blob = new Blob([f], { type: ".xlsx" })
+
+    return workbook.xlsx.writeFile(`./docs/${code}.xlsx`).then(
         // res.status(200).json({
         //     status: 200,
         //     message: "Successfully created!"
         // })
-        res.download(blob).json({
-            status: 200,
-            message: "Successfully created!"
+
+        res.download(`./docs/${code}.xlsx`, (err) => {
+            if (!err) {
+                console.log("Downloaded!")
+                // res.status(200).json({
+                //     status: 200,
+                //     message: "successfully created"
+                // })
+            }
+            // console.log(err)
         })
-    }).catch(err => {
+    ).catch(err => {
         console.log(err)
         res.status(409).json({
             status: 409,
@@ -276,18 +284,4 @@ export const exportAttendance = async (req, res) => {
             code: err.code
         })
     })
-
-    // return workbook.xlsx.writeFile(`/docs/${code}.xlsx`).then(
-    //     res.status(200).json({
-    //         status: 200,
-    //         message: "Successfully created!"
-    //     })
-    // ).catch(err => {
-    //     console.log(err)
-    //     res.status(409).json({
-    //         status: 409,
-    //         message: "Error!",
-    //         code: err.code
-    //     })
-    // })
 }
