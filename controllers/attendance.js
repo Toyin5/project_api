@@ -148,7 +148,7 @@ export const getAllClassAttendanceTable = async (req, res) => {
             for (let j = 0; j < result.length; j++) {
                 const d = result[j];
                 const attendees = d.attendees
-                const present_id = d.lecture
+                const present_id = d.lecture + "present"
                 for (let k = 0; k < attendees.length; k++) {
                     const clas = attendees[k];
                     if (clas._id === student._id) {
