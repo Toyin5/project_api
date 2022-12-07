@@ -1,9 +1,7 @@
 import attendance from "../models/attendance.js";
 import database from "../db.js";
 import ExcelJS from "exceljs";
-import path from "node:path"
 
-// const attendees = []
 export const initializeAttendance = async (req, res) => {
     const { code } = req.params;
     const { lec } = req.body
@@ -22,24 +20,12 @@ export const initializeAttendance = async (req, res) => {
             data: result.acknowledged + result.insertedId
         })
     }).catch(e => {
-        // if (e.code === 11000) {
-        //     // reupdate attendees 
-        //     await attendanceCollection.findOneAndUpdate({ _id: parseInt(lec) }, { $set: { "_id.$.attendees": (await collection.find({}).toArray()).map(stud => JSON.parse(`{ "_id": ${stud._id} }`)) } })
-        //         .then(result => {
-        //             res.status(409).json({
-        //                 status: 409,
-        //                 message: "Conflict + Successfully updated",
-        //                 data: result
-        //             })
-        //         })
-        // } else {
         console.log(e)
         res.status(401).json({
             status: 401,
             message: "Error",
             code: e.code
         })
-        // }
     })
 }
 
@@ -177,7 +163,7 @@ export const getAllClassAttendanceTable = async (req, res) => {
 }
 
 export const exportAttendance = async (req, res) => {
-    const { code } = req.body;
+    const { code } = req.params;
     const db = await database(code);
     const collection = db.collection("students");
     const attendanceCollection = db.collection("attendance");
@@ -188,7 +174,6 @@ export const exportAttendance = async (req, res) => {
     workbook.created = new Date();
     workbook.modified = new Date();
     await collection.find({}).toArray().then(result => {
-        // console.log(result)
         const ws = workbook.addWorksheet("registered_students")
         ws.columns = [
             { header: "Student ID", key: "_id" },
@@ -242,14 +227,9 @@ export const exportAttendance = async (req, res) => {
                     }
                 }
             }
-            // console.log(row)
+            // add total later
             ws.addRow(row)
         }
-
-        // add total
-        // ws.getRow(2).
-
-
     }).catch(e => {
         console.log(e)
         res.status(405).json({
@@ -259,23 +239,32 @@ export const exportAttendance = async (req, res) => {
         })
     })
 
+    await workbook.xlsx.writeBuffer({ bookType: 'xlsx', bookSST: false, type: 'base64' }).then(buffer => {
+        res.writeHead(200, {
+            'Content-Length': Buffer.byteLength(buffer),
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition': "attachment; filename=" + `${code}.xlsx`
+        }).end(Buffer.from(buffer, "base64"))
+        console.log('Downloaded!')
+    }
+        // code for writing to disk
+        // for later use
+        // return workbook.xlsx.writeFile(`./docs/${code}.xlsx`).then(
+        //     // res.status(200).json({
+        //     //     status: 200,
+        //     //     message: "Successfully created!"
+        //     // })
 
-    return workbook.xlsx.writeFile(`./docs/${code}.xlsx`).then(
-        // res.status(200).json({
-        //     status: 200,
-        //     message: "Successfully created!"
-        // })
-
-        res.download(`./docs/${code}.xlsx`, (err) => {
-            if (!err) {
-                console.log("Downloaded!")
-                // res.status(200).json({
-                //     status: 200,
-                //     message: "successfully created"
-                // })
-            }
-            // console.log(err)
-        })
+        //     res.download(`./docs/${code}.xlsx`, (err) => {
+        //         if (!err) {
+        //             console.log("Downloaded!")
+        //             // res.status(200).json({
+        //             //     status: 200,
+        //             //     message: "successfully created"
+        //             // })
+        //         }
+        //         // console.log(err)
+        //     })
     ).catch(err => {
         console.log(err)
         res.status(409).json({
