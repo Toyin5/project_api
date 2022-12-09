@@ -1,5 +1,5 @@
 import course from "../models/course.js";
-import database from "../db.js";
+import database from "../utils/db.js";
 import bcrypt from "bcrypt";
 export const registerCourse = async (req, res) => {
     const db = await database();

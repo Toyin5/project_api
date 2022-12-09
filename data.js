@@ -1,3 +1,5 @@
+import calculateTotal from "./utils/calculatetotal.js";
+
 const data = [
     {
         "_id": 1,
@@ -138,5 +140,6 @@ for (let i = 0; i < students.length; i++) {
             }
         }
     }
+    row['total'] = calculateTotal(row)
     console.log(row)
 }

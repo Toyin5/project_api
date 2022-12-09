@@ -1,7 +1,7 @@
 import express from "express"
 import bodyParser from "body-parser"
 import cors from "cors";
-import database from "./db.js";
+import database from "./utils/db.js";
 import { courseRouter } from "./routes/courses.js";
 import { studentRouter } from "./routes/student.js";
 import { attendanceRouter } from "./routes/attendance.js";
