@@ -1,7 +1,7 @@
 import attendance from "../models/attendance.js";
 import database from "../utils/db.js";
 import ExcelJS from "exceljs";
-import calculateTotal from "../utils/calculatetotal.js";
+import calculateTotal from "../utils/calculateTotal.js";
 
 export const initializeAttendance = async (req, res) => {
     const { code } = req.params;
